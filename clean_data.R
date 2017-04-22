@@ -87,9 +87,10 @@ train <- bind_rows(single, train)
 
 test <- multiple %>%
   group_by(station) %>%
-  filter(row_number() > n)
+  filter(row_number() > n) %>%
+  select(-n, -random)
 
 
-write.csv(train, 'train.csv')
-write.csv(test, 'test.csv')
+write.csv(train, 'train.csv', row.names = F)
+write.csv(test, 'test.csv', row.names = F)
 
