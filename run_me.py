@@ -1,12 +1,13 @@
+# Load libraries ---------------------
 import numpy as np
 import pandas as pd
-# import cluster_class 
+import cluster_class 
 from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import pairwise_distances
 
 
-
+# Load data ---------------------
 # Define data path, column names
 DATA_PATH = '/Users/VanNguyen/Desktop/COMPSCI589/Final Project/Data/'
 COLUMN_NAMES = ['season','hour','holiday','workingday','weathersit',
@@ -23,7 +24,6 @@ X_train = train.iloc[:, :-1]
 y_train = train.iloc[:, -1]
 X_test = test.iloc[:, :-1]
 y_test = test.iloc[:, -1]
-
 
 
 # Function to measure cluster quality ---------------------
@@ -52,9 +52,7 @@ def cluster_quality(X,Z,K):
     return cluster_ss
     
 
-
 # CV for KMeans model-----------------------
-
 def make_dummy(X):
     '''
     This function takes a data matrix X (N,D) and makes dummy variables for the stations.
@@ -92,7 +90,6 @@ def KMeansCV(X, range_k, range_r):
     return optimal_params
 
 
-
 # CV for classification
 
 
@@ -105,22 +102,3 @@ if __name__ == '__main__':
     range_k = range(3)
     range_r = range(5)
     best_params = KMeansCV(X = X_train_dummy, range_k = [1,2,3,4], range_r = [1,2,3,4,5])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
