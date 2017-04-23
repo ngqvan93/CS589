@@ -101,4 +101,4 @@ if __name__ == '__main__':
 
     range_k = range(3)
     range_r = range(5)
-    best_params = KMeansCV(X = X_train_dummy, range_k = [1,2,3,4], range_r = [1,2,3,4,5])
+    best_params = KMeansCV(X = X_train_dummy, range_k = range_k, range_r = range_r)
