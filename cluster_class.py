@@ -58,28 +58,7 @@ class cluster_class:
                 self.labels[k] = random.choice(Y)
 
 
-    def cluster_quality(X,Z,K):
-    '''
-    Compute a cluster quality score given a data matrix X (N,D), a vector of 
-    cluster indicators Z (N,), and the number of clusters K.
-    '''
-    
-    cluster_ss = 0
-    
-    for k in xrange(K):
-        ix = np.where(Z==k)
-        # Check if there is any case assigned to cluster kth.
-        if len(ix[0]) > 0:
-            X_k = X[ix]
-            pw_dist = pairwise_distances(X_k)
-            sum_pw_dist = np.sum(np.tril(pw_dist))
-        # If not, set the sum of pairwise distances to be 0.
-        else:
-            sum_pw_dist = 0
-        cluster_ss += (1/float(len(ix)))*sum_pw_dist
-    
-    return cluster_ss
-        
+
     def predict(self, X):
         '''
         Make predictions usins a cluster classifier object
