@@ -7,12 +7,12 @@ from sklearn.metrics import pairwise_distances
 
 
 
-# Load data 
+# Define data path, column names
 DATA_PATH = '/Users/VanNguyen/Desktop/COMPSCI589/Final Project/Data/'
-
-column_names = ['season','hour','holiday','workingday','weathersit',
+COLUMN_NAMES = ['season','hour','holiday','workingday','weathersit',
 'feeling_temp','humidity','windspeed','duration','station','type']
 
+# Load data
 train = pd.read_csv(DATA_PATH + 'train.csv')
 test = pd.read_csv(DATA_PATH + 'test.csv')
 
@@ -24,11 +24,14 @@ y_train = train.iloc[:, -1]
 X_test = test.iloc[:, :-1]
 y_test = test.iloc[:, -1]
 
+
+
 # Function to measure cluster quality ---------------------
 def cluster_quality(X,Z,K):
     '''
-    Compute a cluster quality score given a data matrix X (N,D), a vector of 
-    cluster indicators Z (N,), and the number of clusters K.
+    This functions takes a data matrix X (N,D), a vector of 
+    cluster indicators Z (N,), and the number of clusters K, then
+    computes the within cluster sum of squares.
     '''
     
     cluster_ss = 0
@@ -53,14 +56,20 @@ def cluster_quality(X,Z,K):
 # CV for KMeans model-----------------------
 
 def make_dummy(X):
-    # make station column into categorical variable
-    # create dummy variables for all stations
-    # column bind original variables with station indicator variables
-
+    '''
+    This function takes a data matrix X (N,D) and makes dummy variables for the stations.
+    '''
+    # Get the list of unique station names.
     stations = X['station'].unique()
+
+    # Create dummy variables for each station.
     dummy = pd.get_dummies(X.loc[:, 'station'])
+
+    # Column bind the dummy matrix to the data matrix.
     X = pd.concat([X, dummy], axis=1, ignore_index = True)
-    X.columns = np.hstack((column_names[:-1], stations))
+    X.columns = np.hstack(( COLUMN_NAMES[:-1], stations))
+
+    # Delete station columns.
     X.drop('station', axis=1, inplace=True)
 
     return X
