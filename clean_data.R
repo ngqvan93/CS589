@@ -43,9 +43,10 @@ quarter <- quarter %>%
 
 # Clean data, join with hour.csv ---------------------------------
 full.df <- right_join(hour, quarter, by = c('dteday', 'hr')) %>%
-  arrange(dteday, hr)
+  arrange(dteday, hr) %>%
+  select(-dteday)
 
-names(full.df) <- c('date', 'season', 'hour', 'holiday', 'workingday', 'weathersit', 
+names(full.df) <- c('season', 'hour', 'holiday', 'workingday', 'weathersit', 
                     'feeling_temp', 'humidity', 'windspeed', 'duration', 'station', 'type')
 
 
