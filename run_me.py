@@ -37,7 +37,7 @@ def cluster_quality(X,Z,K):
     cluster_ss = 0
     
     for k in xrange(K):
-        ix = np.where(Z==k)
+        ix = np.where(Z == k)
         # Check if there is any case assigned to cluster kth.
         if len(ix[0]) > 0:
             X_k = X[ix]
@@ -64,11 +64,11 @@ def make_dummy(X):
     dummy = pd.get_dummies(X.loc[:, 'station'])
 
     # Column bind the dummy matrix to the data matrix.
-    X = pd.concat([X, dummy], axis=1, ignore_index = True)
-    X.columns = np.hstack(( COLUMN_NAMES[:-1], stations))
+    X = pd.concat([X, dummy], axis = 1, ignore_index = True)
+    X.columns = np.hstack((COLUMN_NAMES[:-1], stations))
 
     # Delete station columns.
-    X.drop('station', axis=1, inplace=True)
+    X.drop('station', axis = 1, inplace = True)
 
     return X
 
