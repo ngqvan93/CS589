@@ -147,36 +147,35 @@ def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
     '''
     This function produces a training and validation curves for cross validation.
 
-
     '''
     # since each iteration of a new alpha value yields 5 folds,
-        # take the average rmse at each alpha level
-        train_rmse_mean = np.mean(train_rmse, axis=1)
-        train_rmse_std = np.std(train_rmse, axis=1)
-        valid_rmse_mean = np.mean(valid_rmse, axis=1)
-        valid_rmse_std = np.std(valid_rmse, axis=1)
-        
-        # used plotting example from sklearn validation_curve documentation
-        # as outline for code below
-        plt.title("Train-Validation Curve with KFold-CV on Decision Tree Classifier")
-        plt.xlabel("Maximum Tree Depth") 
-        plt.ylabel("RMSE")
-        plt.ylim(0.0, np.amax(valid_rmse)+2)
-        plt.xlim(0.0, np.amax(depth_vals)+10)
-        lw = 2
-        plt.plot(depth_vals, train_rmse_mean, label="Training RMSE",
-                 color="darkorange", lw=lw)
-        plt.fill_between(depth_vals, train_rmse_mean - train_rmse_std,
-                         train_rmse_mean + train_rmse_std, alpha=0.2,
-                         color="darkorange", lw=lw)
-        plt.plot(depth_vals, valid_rmse_mean, label="Cross-validation RMSE",
-                 color="navy", lw=lw)
-        plt.fill_between(depth_vals, valid_rmse_mean - valid_rmse_std,
-                         valid_rmse_mean + valid_rmse_std, alpha=0.2,
-                         color="navy", lw=lw)
-        plt.legend(loc="best")
-        # Save plot to folder
-        plt.savefig('../Figures/train_val_curve.pdf')
+    # take the average rmse at each alpha level
+    train_rmse_mean = np.mean(train_rmse, axis=1)
+    train_rmse_std = np.std(train_rmse, axis=1)
+    valid_rmse_mean = np.mean(valid_rmse, axis=1)
+    valid_rmse_std = np.std(valid_rmse, axis=1)
+    
+    # used plotting example from sklearn validation_curve documentation
+    # as outline for code below
+    plt.title("Train-Validation Curve with KFold-CV on Decision Tree Classifier")
+    plt.xlabel("Maximum Tree Depth") 
+    plt.ylabel("RMSE")
+    plt.ylim(0.0, np.amax(valid_rmse)+2)
+    plt.xlim(0.0, np.amax(depth_vals)+10)
+    lw = 2
+    plt.plot(depth_vals, train_rmse_mean, label="Training RMSE",
+             color="darkorange", lw=lw)
+    plt.fill_between(depth_vals, train_rmse_mean - train_rmse_std,
+                     train_rmse_mean + train_rmse_std, alpha=0.2,
+                     color="darkorange", lw=lw)
+    plt.plot(depth_vals, valid_rmse_mean, label="Cross-validation RMSE",
+             color="navy", lw=lw)
+    plt.fill_between(depth_vals, valid_rmse_mean - valid_rmse_std,
+                     valid_rmse_mean + valid_rmse_std, alpha=0.2,
+                     color="navy", lw=lw)
+    plt.legend(loc="best")
+    # Save plot to folder
+    plt.savefig('../Figures/train_val_curve.pdf')
 
 
 
