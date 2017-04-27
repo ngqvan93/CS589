@@ -27,8 +27,6 @@ from sklearn.model_selection import validation_curve
 from sklearn.metrics import mean_squared_error
 
 
-import time
-
 
 # Load data ---------------------
 # Define data path, column names
@@ -42,31 +40,37 @@ test = pd.read_csv(DATA_PATH + 'test.csv')
 
    
 
-# Data processing --------------------
+# Data Processing --------------------
 
-def make_dummy(X):
+def make_dummy(data):
     '''
-    This function takes a data matrix X (N,D) and 
-    makes dummy variables for categorical variables.
+    This function converts cetegorical data to numerical data.
+
+    Args: 
+        data: A data matrix of dimension (N,D).
+
+    Returns:
+        X: A data matrix X (N, D-1).
+        y: A vector of label outputs. 
     '''
 
     # Create indicator variables for categorical features. 
-    season_dummy = np.array(pd.get_dummies(X.loc[:, 'season']))
-    holiday_dummy = np.array(pd.get_dummies(X.loc[:, 'holiday']))
-    workingday_dummy = np.array(pd.get_dummies(X.loc[:, 'workingday']))
-    weathersit_dummy = np.array(pd.get_dummies(X.loc[:, 'weathersit']))
-    station_dummy = np.array(pd.get_dummies(X.loc[:, 'station']))
-    type_dummy = np.array(pd.get_dummies(X.loc[:, 'type']))
+    season_dummy = np.array(pd.get_dummies(data.loc[:, 'season']))
+    holiday_dummy = np.array(pd.get_dummies(data.loc[:, 'holiday']))
+    workingday_dummy = np.array(pd.get_dummies(data.loc[:, 'workingday']))
+    weathersit_dummy = np.array(pd.get_dummies(data.loc[:, 'weathersit']))
+    station_dummy = np.array(pd.get_dummies(data.loc[:, 'station']))
+    type_dummy = np.array(pd.get_dummies(data.loc[:, 'type']))
 
     # Delete categorical columns.
-    X.drop(['season', 'holiday', 'workingday', 
+    data.drop(['season', 'holiday', 'workingday', 
         'weathersit', 'station', 'type'], axis = 1, inplace = True)
 
     # Column bind the dummy matrix to the data matrix.
-    X = np.column_stack((np.array(X), season_dummy, station_dummy, type_dummy))
-    y = X[:, -1]
-    X = X[:, :-1]
-
+    data = np.column_stack((np.array(data), season_dummy, station_dummy, type_dummy))
+    X = data[:, :-1]
+    y = data[:, -1]
+    
     return X, y
 
 
@@ -143,6 +147,7 @@ def dt_CV(k, depth_vals, X_train, y_train, create_plot = None):
 
     return optimal_dt
 
+
 def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
     '''
     This function produces a training and validation curves for cross validation.
@@ -179,7 +184,6 @@ def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
 
 
 
-
 # SVM Cross Validation --------------------
 
 def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
@@ -213,10 +217,8 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
 
 
 
-
-
-
-
+def main():
+    pass
 
 
 
