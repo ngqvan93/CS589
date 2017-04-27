@@ -204,7 +204,7 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     svc = GridSearchCV(svc, params, cv = k)
     svc.fit(X_train, y_train)
     
-    return optimal_dt
+    return svc.best_estimator_
 
 
 
