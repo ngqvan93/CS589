@@ -95,3 +95,7 @@ test <- multiple %>%
 write.csv(train, 'train.csv', row.names = F)
 write.csv(test, 'test.csv', row.names = F)
 
+
+idx <- sample(1:nrow(train), size = floor(0.01*nrow(train)), replace = F)
+small_train <- train[idx,]
+write.csv(small_train, 'small_train.csv', row.names = F)
