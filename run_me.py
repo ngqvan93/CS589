@@ -1,3 +1,9 @@
+'''
+CS 589: Final Project
+@authors: Emma Kearney, Van Nguyen
+'''
+
+
 # Load libraries ---------------------
 
 # Data manipulation
