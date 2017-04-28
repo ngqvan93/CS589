@@ -1,12 +1,8 @@
 import numpy as np
 import pandas as pd 
 import random
-from sklearn.metrics import accuracy_score
 from sklearn.cluster import KMeans
 from sklearn.model_selection import KFold
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import GridSearchCV
 
 
 
@@ -16,15 +12,22 @@ class cluster_class:
         '''
         Create a cluster classifier object
         '''
-        # Initialize a clustering model and a dictionary to contain class labels
+        # Initialize a clustering model and a dictionary to contain clusters' classifier
         self.K = K
         self.kmeans = KMeans(n_clusters = self.K, random_state = r)
-        self.labels = {}
+        self.clusters = {}
+        self.clf = {}
 
+    def classify_one_cluster(self, k, clf, *args):
+        X = self.clusters[k][0]
+        y = self.clusters[k][1]
+        clf = clf(args)
+        clf.fit(X, y)
+        self.clf[k] = clf
 
-    def fit_cluster(self, X, Y, clf, *args):
+    def clustering(self, X, Y):
         '''
-        Learn a cluster classifier object
+        Cluster data and store to dictionary
         '''
 
         # Fit a K-Means clustering model.
@@ -38,24 +41,9 @@ class cluster_class:
 
             # Check if there is any case assigned to cluster kth.
             if len(ix[0]) > 0:
-
-                # Find the labels of data in cluster kth.
                 Y_k = Y[ix]
-                # Subset X in cluster kth.
                 X_k = X[ix]
-                # Append the labels to X.
-                X_k['label'] = Y_k
-                # Group by station.
-                groups = X[ix].groupby('station')
-
-                # Iterate through each group of station. 
-                # Fit a classification model.
-                for g in groups.groups:
-                    X_kg = groups.get_group(g)
-                    X_kg = X_kg[X_kg.columns.difference('station')] # drop station column
-                    Y_kg = X_kg['label']
-                    clf = clf(*args[k]).fit(X_kg, Y_kg)
-                    labels[k][g] = clf
+                self.clusters[k] = (X_k, y_k)   
             else:
                 self.labels[k] = random.choice(Y)
 

@@ -61,7 +61,7 @@ def make_dummy(data):
     workingday_dummy = np.array(pd.get_dummies(data.loc[:, 'workingday']))
     weathersit_dummy = np.array(pd.get_dummies(data.loc[:, 'weathersit']))
     station_dummy = np.array(pd.get_dummies(data.loc[:, 'station']))
-    type_dummy = np.array(pd.get_dummies(data.loc[:, 'type']))
+    type_dummy = np.array(pd.get_dummies(data.loc[:, 'type'].iloc[:, 1]))
 
     # Delete categorical columns.
     data.drop(['season', 'holiday', 'workingday', 
