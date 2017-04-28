@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd 
 import random
 from sklearn.cluster import KMeans
-from sklearn.model_selection import KFold
 
 
 
@@ -18,6 +17,13 @@ class cluster_class:
         self.clusters = {}
         self.clf = {}
         self.proportions = {}
+
+    def fit_baseline():
+        pass
+        
+    def predict_baseline():
+        pass
+
 
     def classify_one_cluster(self, k, clf, args):
         X = self.clusters[k][0]
@@ -62,16 +68,8 @@ class cluster_class:
         '''
         Make predictions using a cluster classifier object
         '''        
-        for k in xrange(K):
+        for k in xrange(self.K):
             predictions = self.clf[k].predict(X)
             prop = float(sum(predictions))/len(predictions)
             self.proportions[k] = (prop, 1-prop)
 
-    
-    def score(self,X,Y):
-        '''
-        Compute prediction error rate for a cluster classifier object
-        '''          
-        Yhat = self.predict(X)
-        return 1 - accuracy_score(Y,Yhat)
-        
