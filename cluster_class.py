@@ -18,10 +18,10 @@ class cluster_class:
         self.clf = {}
         self.proportions = {}
 
-    def fit_baseline():
+    def fit_baseline(self, X):
         pass
         
-    def predict_baseline():
+    def predict_baseline(self, X, y):
         pass
 
 
@@ -31,6 +31,7 @@ class cluster_class:
         clf = clf(args)
         clf.fit(X, y)
         self.clf[k] = clf
+
 
     def clustering(self, X, y):
         '''
