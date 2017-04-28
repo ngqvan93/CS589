@@ -44,7 +44,8 @@ test = pd.read_csv(DATA_PATH + 'test.csv')
 
 def make_dummy(data):
     '''
-    This function converts cetegorical data to numerical data.
+    This function takes a full data set, converts cetegorical data to numerical data,
+    and split data inputs and data outputs. 
 
     Args: 
         data: A data matrix of dimension (N,D).
@@ -79,8 +80,14 @@ def make_dummy(data):
 
 def KMeans_CV(X, K_vals):   
     '''
-    This function takes data matrix X (N, D) and a range of hyperparameters to search over.
-    It returns the optimal hyperparameter n_clusters of K-Means. 
+    This function does cross validation for K-Means clustering model.
+
+    Args:
+        X: A data matrix X of dimension (N, D).
+        K_vals: A range of hyperparameter values to search over.
+
+    Returns:
+        The optimal hyperparameter n_clusters of K-Means. 
     ''' 
 
     # Declare the range of hyperparamters to search over
@@ -150,9 +157,10 @@ def dt_CV(k, depth_vals, X_train, y_train, create_plot = None):
 
 def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
     '''
-    This function produces a training and validation curves for cross validation.
-
+    This is an utility function for dt_CV().
+    It produces a train/validation curves plot during Decision Tree cross validation.
     '''
+    
     # since each iteration of a new alpha value yields 5 folds,
     # take the average rmse at each alpha level
     train_rmse_mean = np.mean(train_rmse, axis=1)
