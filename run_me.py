@@ -38,8 +38,8 @@ DATA_PATH = '/Users/VanNguyen/Desktop/COMPSCI589/Final Project/Data/'
 
 
 # Load data
-train = pd.read_csv(DATA_PATH + 'train.csv')
-test = pd.read_csv(DATA_PATH + 'test.csv')
+TRAIN = pd.read_csv(DATA_PATH + 'train.csv')
+TEST = pd.read_csv(DATA_PATH + 'test.csv')
 
    
 
@@ -229,12 +229,15 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
 def main():
 
     # Part 1: Make data.
-    X_train, y_train = make_dummy(train)
-    X_test, y_test = make_dummy(test)
+    X_train, y_train = make_dummy(TRAIN) # Full data
+    X_test, y_test = make_dummy(TEST) # Full data
+
+    # X_train, y_train = make_dummy(small_train) # You can define some small train and small test here
+    # X_test, y_test = make_dummy(small_test)
 
     
     # Part 2: K-Means CV.   
-    K_vals = range(1, 40)
+    K_vals = range(1, 40)   # You can change the range of K. But let's see what 1 to 40 gives us. 
     best_km = KMeans_CV(X = X_train, K_vals = K_vals)
     # Note down best K here.
     print best_km
@@ -243,22 +246,27 @@ def main():
 
     # Part 3: Fit pipeline.
     
-    best_K = 10                                    # CHANGE THIS 
+    best_K = 10                    # CHANGE THIS based on what you have from Part 1. 
 
     # Part 3.1: Fit baseline model.
+    # Initialize a Cluster_Class object.
     clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # Fit and predict baseline model.
     clf.fit_baseline(X_train, y_train)
-    clf.predict_baseline(X_test, y_test)
-    print clf.proportions
+    baseline_predictions = clf.predict_baseline(X_test, y_test)
+    print baseline_predictions
 
     # Part 3.2: Fit cluster-classification model. Tune each classifier.
     
     # Part 3.2.1: Tune DecisionTreeClassifier.
     depth_vals = range(1, 10)          # CHANGE THIS
     
+    # Initialize a Cluster_Class object.
     clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # Fit a baseline model aka initial clustering. 
     clf.fit_baseline(X_train, y_train)
     
+    # In each cluster, run CV to find optimal DecisionTree. 
     for i in xrange(clf.K):
         best_dt = dt_CV(k = 3, #number of folds
             depth_vals = depth_vals, 
