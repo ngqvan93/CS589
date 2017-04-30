@@ -11,7 +11,7 @@ import random
 from sklearn.cluster import KMeans
 
 
-# Cluster_class object ---------------------
+# Cluster_Class object ---------------------
 
 class Cluster_Class:
     
