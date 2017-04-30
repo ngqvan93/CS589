@@ -3,7 +3,6 @@ CS 589: Final Project
 @authors: Emma Kearney, Van Nguyen
 '''
 
-
 # Load libraries ---------------------
 
 # Data manipulation
@@ -12,11 +11,6 @@ import pandas as pd
 
 # Plotting
 import matplotlib.pyplot as plt
-
-
-import cluster_class 
-
-import time
 
 # Sklearn machine learning model
 from sklearn.cluster import KMeans
@@ -30,6 +24,8 @@ from sklearn.model_selection import validation_curve
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics.pairwise import pairwise_distances
 
+# Others
+import cluster_class 
 
 
 # Load data ---------------------
@@ -42,7 +38,6 @@ TRAIN = pd.read_csv(DATA_PATH + 'train.csv')
 TEST = pd.read_csv(DATA_PATH + 'test.csv')
 
    
-
 # Data Processing --------------------
 
 def make_dummy(data):
@@ -76,7 +71,6 @@ def make_dummy(data):
     y = data[:, -1]
     
     return X, y
-
 
 
 # K-Means Cross Validation --------------------
@@ -193,7 +187,6 @@ def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
     plt.savefig('../Figures/train_val_curve.pdf')
 
 
-
 # SVM Cross Validation --------------------
 
 def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
@@ -226,6 +219,7 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     return svc.best_estimator_
 
 
+# main() --------------------
 def main():
 
     # Part 1: Make data.
@@ -241,7 +235,6 @@ def main():
     best_km = KMeans_CV(X = X_train, K_vals = K_vals)
     # Note down best K here.
     print best_km
-
 
 
     # Part 3: Fit pipeline.
@@ -300,12 +293,5 @@ def main():
 
 
 if __name__ == '__main__':
-
     main()
         
-
-
-
-
-
-
