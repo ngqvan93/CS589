@@ -28,6 +28,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import validation_curve
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics.pairwise import pairwise_distances
 
 
 
@@ -92,19 +93,49 @@ def KMeans_CV(X, K_vals):
         The optimal hyperparameter n_clusters of K-Means. 
     ''' 
 
-    # Declare the range of hyperparamters to search over
-    params = {'n_clusters': K_vals}
+    # # Declare the range of hyperparamters to search over
+    # params = {'n_clusters': K_vals}
 
-    # Initialize a K-Means model
-    km = KMeans(random_state = 0)
+    # # Initialize a K-Means model
+    # km = KMeans(random_state = 0)
 
-    # Fit K-Means model and search for the best hyperparameter based on
-    # K-Means default scoring method.
-    km = GridSearchCV(km, params)
-    km.fit(X)
+    # # Fit K-Means model and search for the best hyperparameter based on
+    # # K-Means default scoring method.
+    # km = GridSearchCV(km, params)
+    # km.fit(X)
 
-    return km.best_estimator_
+    # return km.best_estimator_
 
+    quality_scores = []
+    for i in K_vals:
+        km = KMeans(n_clusters = i, random_state = 0)
+        km.fit(X)
+        Z = km.labels_
+        quality_scores.append(cluster_quality(X, Z, i))
+
+    return quality_scores
+
+def cluster_quality(X,Z,K):
+    '''
+    Compute a cluster quality score given a data matrix X (N,D), a vector of 
+    cluster indicators Z (N,), and the number of clusters K.
+    '''
+    
+    cluster_ss = 0
+    
+    for k in xrange(K):
+        ix = np.where(Z==k)
+        # Check if there is any case assigned to cluster kth.
+        if len(ix[0]) > 0:
+            X_k = X[ix]
+            pw_dist = pairwise_distances(X_k)
+            sum_pw_dist = np.sum(np.tril(pw_dist))
+        # If not, set the sum of pairwise distances to be 0.
+        else:
+            sum_pw_dist = 0
+        cluster_ss += (1/float(len(ix)))*sum_pw_dist
+    
+    return cluster_ss
 
 
 # Decision Tree Cross Validation --------------------
@@ -226,23 +257,20 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     return svc.best_estimator_
 
 
+def main():
 
+    # Part 1: K-Means CV
+    X_train, y_train = make_dummy(train)
+    K_vals = range(1, 40)
+    best_km = KMeans_CV(X = X_train, K_vals = K_vals)
+    
+
+    # Part 2: Fit pipeline
 
 
 
 if __name__ == '__main__':
 
-    begin = time.time()
-    X_train, y_train = make_dummy(train)
-    end = time.time()
-    print 'make dummy', end-begin
-
-    K_vals = range(1,40)
-    
-    begin = time.time()
-    print KMeans_CV(X = X_train, K_vals = K_vals)
-    end = time.time()
-    print 'cross validation', end-begin
     
 
 

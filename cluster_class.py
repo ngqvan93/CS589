@@ -17,11 +17,11 @@ class cluster_class:
     
     def __init__(self, K, r):
         '''
-        Create a cluster classifier object
+        This function creates a cluster classifier object.
 
         Args:
-            K: Number of clusters
-            r: random seed
+            K: Number of clusters.
+            r: random seed.
         '''
 
         # Initialize a clustering model and a dictionary to contain clusters' classifier
@@ -31,14 +31,8 @@ class cluster_class:
         self.clf = {}
         self.proportions = {}
 
-    def fit_baseline(self, X):
-        pass
-        
-    def predict_baseline(self, X, y):
-        pass
 
-
-    def classify_one_cluster(self, k, clf, args):
+    def classify_one_cluster(self, k, clf, *args):
         '''
         This function fits a classifier of a specified cluster.
 
@@ -50,12 +44,15 @@ class cluster_class:
 
         X = self.clusters[k][0]
         y = self.clusters[k][1]
-        clf = clf(args)
+        if clf == DecisionTreeClassifier:
+            clf = clf(max_depth = args[0])
+        else:
+            clf = clf(C = args[0], kernel = args[1])
         clf.fit(X, y)
         self.clf[k] = clf
 
 
-    def clustering(self, X, y):
+    def fit_baseline(self, X, y):
         '''
         This function fits clustering model and stores data in each cluster.
 
@@ -75,7 +72,7 @@ class cluster_class:
 
             # Check if there is any case assigned to cluster kth.
             if len(ix[0]) > 0:
-                y_k = Y[ix]
+                y_k = y[ix]
                 X_k = X[ix]
                 self.clusters[k] = (X_k, y_k)   
             else:
@@ -97,9 +94,24 @@ class cluster_class:
             args: Arguments of the classifier.
         '''
         
-        self.clustering(X, y)
+        self.fit_baseline(X, y)
         for k in range(self.K):
-            self.classify_one_cluster(k, clf, args)
+            self.classify_one_cluster(k, clf, args[k])
+
+
+    def predict_baseline(self, X, y):
+        '''
+        This function make predictions from the baseline model.
+
+        Args:
+            X: A data matrix of dimension (N, D).
+            y: A vector label (N, 1).
+        '''
+        self.kmeans.predict(X)
+        for k in xrange(self.K):
+            if len(self.clusters[k][1]) > 0:
+                prop = float(sum(self.clusters[k][1]))/len(self.clusters[k][1])
+                self.proportions[k] = (prop, 1-prop) 
 
 
     def predict(self, X):
@@ -111,7 +123,7 @@ class cluster_class:
         '''        
 
         for k in xrange(self.K):
-            predictions = self.clf[k].predict(X)
-            prop = float(sum(predictions))/len(predictions)
-            self.proportions[k] = (prop, 1-prop)
-
+            if len(self.clusters[k][1]) > 0:
+                predictions = self.clf[k].predict(X)
+                prop = float(sum(predictions))/len(predictions)
+                self.proportions[k] = (prop, 1-prop)
