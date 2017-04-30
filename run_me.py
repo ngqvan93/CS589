@@ -13,7 +13,10 @@ import pandas as pd
 # Plotting
 import matplotlib.pyplot as plt
 
+
 import cluster_class 
+
+import time
 
 # Sklearn machine learning model
 from sklearn.cluster import KMeans
@@ -31,8 +34,7 @@ from sklearn.metrics import mean_squared_error
 # Load data ---------------------
 # Define data path, column names
 DATA_PATH = '/Users/VanNguyen/Desktop/COMPSCI589/Final Project/Data/'
-COLUMN_NAMES = ['season','hour','holiday','workingday','weathersit',
-'feeling_temp','humidity','windspeed','duration','station','type']
+
 
 # Load data
 train = pd.read_csv(DATA_PATH + 'train.csv')
@@ -48,11 +50,11 @@ def make_dummy(data):
     and split data inputs and data outputs. 
 
     Args: 
-        data: A data matrix of dimension (N,D).
+        data: A data matrix of dimension (N,D+1).
 
     Returns:
-        X: A data matrix X (N, D-1).
-        y: A vector of label outputs. 
+        X: A data matrix X (N, D).
+        y: A vector label (N, 1).
     '''
 
     # Create indicator variables for categorical features. 
@@ -115,7 +117,7 @@ def dt_CV(k, depth_vals, X_train, y_train, create_plot = None):
         k: A positive number determining the number of fold in K-Fold cross validation.
         depth_vals: A list of values for depth of the DecisionTreeClassifier.
         X_train: A data matrix (N, D) for training and validation.
-        y_train: A list (N, 1) for training output labels.
+        y_train: A vector label (N, 1) for training output labels.
         create_plot: Default 'None'. If 'True', produce a plot of training and validation RMSE curves.
 
     Returns:
@@ -203,7 +205,7 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
         C_vals: Penalty parameter C of the error term.
         kernel_vals: The kernel types to be used in the algorithm.
         X_train: A data matrix (N, D) for training and validation.
-        y_train: A list (N, 1) for training output labels.
+        y_train: A vector label (N, 1) for training output labels.
 
     Returns:
         The optimal SVC classifier.
@@ -225,25 +227,22 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
 
 
 
-def main():
-    pass
-
 
 
 
 if __name__ == '__main__':
-    main()
-    # begin = time.time()
-    # X_train, y_train = make_dummy(train)
-    # end = time.time()
-    # print 'make dummy', end-begin
 
-    # K_vals = range(1,40)
+    begin = time.time()
+    X_train, y_train = make_dummy(train)
+    end = time.time()
+    print 'make dummy', end-begin
+
+    K_vals = range(1,40)
     
-    # begin = time.time()
-    # print KMeansCV(X = X_train, K_vals = range_k)
-    # end = time.time()
-    # print 'cross validation', end-begin
+    begin = time.time()
+    print KMeans_CV(X = X_train, K_vals = K_vals)
+    end = time.time()
+    print 'cross validation', end-begin
     
 
 
