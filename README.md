@@ -60,16 +60,7 @@ done before. In the spirit of trying to improve the efficiency of the bike share
 distribution of bike usage, split between two types of bikers at every station in Washington DC.
 
 
-### 6. Collaboration Plan
-We are both interested in the data wrangling and the pipeline components, and thus will collaborate on these
-portions of the project. We share an office so meeting regularly to work together is very feasible.
-For writing the paper, one person will be responsible for the Introduction, Related Work, and Methodology
-(Data Wrangling). The second person will be responsible for the Methodology (Pipeline), Data Sets, and
-Discussion and Conclusion. We will both contribute to the Experiments and Results section as well as the
-References.
-
-
-### 7. References
+### 6. References
 [FG] H. Fanaee-T, J. Gama. Event labeling combining ensemble detectors and background knowledge. Progress
 in Artificial Intelligence. Springer Berlin Heidelberg. pp. 1-15. 2013.  
 [GC] R. Giot, R. Cherrier. Predicting Bikeshare System Usage Up to One Day Ahead. IEEE Symposium Series
