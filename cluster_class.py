@@ -13,7 +13,7 @@ from sklearn.cluster import KMeans
 
 # Cluster_class object ---------------------
 
-class cluster_class:
+class Cluster_Class:
     
     def __init__(self, K, r):
         '''
@@ -106,12 +106,18 @@ class cluster_class:
         Args:
             X: A data matrix of dimension (N, D).
             y: A vector label (N, 1).
+
+        Returns:
+            A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
         '''
+
         self.kmeans.predict(X)
         for k in xrange(self.K):
             if len(self.clusters[k][1]) > 0:
                 prop = float(sum(self.clusters[k][1]))/len(self.clusters[k][1])
                 self.proportions[k] = (prop, 1-prop) 
+
+        return self.proportions
 
 
     def predict(self, X):
@@ -120,6 +126,9 @@ class cluster_class:
 
         Args:
             X: A data matrix of dimension (N, D).
+
+        Returns:
+            A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
         '''        
 
         for k in xrange(self.K):
@@ -127,3 +136,5 @@ class cluster_class:
                 predictions = self.clf[k].predict(X)
                 prop = float(sum(predictions))/len(predictions)
                 self.proportions[k] = (prop, 1-prop)
+
+        return self.proportions
