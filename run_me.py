@@ -270,25 +270,25 @@ def main():
     predictions = clf.predict(X_test)
     print predictions
 
-    # Part 3.2.2: Tune SVM classifier.
-    C_vals = [1, 10, 20, 30, 50, 100, 500, 1000]          # CHANGE THIS
-    kernel_vals = ['rbf', 'linear', 'poly']
+    # # Part 3.2.2: Tune SVM classifier.
+    # C_vals = [0.0001, 0.001, 0.1, 1, 10, 20, 30, 50, 100, 500, 1000]          # CHANGE THIS
+    # kernel_vals = ['rbf', 'linear']
     
-    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    clf.fit_baseline(X_train, y_train)
+    # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # clf.fit_baseline(X_train, y_train)
     
-    best_C = []
-    best_kernels = []
-    for i in xrange(clf.K):
-        best_svm = svm_CV(k = 3, # number of folds
-            C_vals = C_vals, 
-            kernel_vals = kernel_vals, 
-            X_train = clf.clusters[i][0], 
-            y_train = clf.clusters[i][1])
-        clf.clf[i] = svm
+    # best_C = []
+    # best_kernels = []
+    # for i in xrange(clf.K):
+    #     best_svm = svm_CV(k = 3, # number of folds
+    #         C_vals = C_vals, 
+    #         kernel_vals = kernel_vals, 
+    #         X_train = clf.clusters[i][0], 
+    #         y_train = clf.clusters[i][1])
+    #     clf.clf[i] = svm
 
-    predictions = clf.predict(X_test)
-    print predictions
+    # predictions = clf.predict(X_test)
+    # print predictions
 
 
 if __name__ == '__main__':

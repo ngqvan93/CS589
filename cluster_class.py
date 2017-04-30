@@ -99,13 +99,12 @@ class Cluster_Class:
             self.classify_one_cluster(k, clf, args[k])
 
 
-    def predict_baseline(self, X, y):
+    def predict_baseline(self, X):
         '''
         This function make predictions from the baseline model.
 
         Args:
             X: A data matrix of dimension (N, D).
-            y: A vector label (N, 1).
 
         Returns:
             A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
