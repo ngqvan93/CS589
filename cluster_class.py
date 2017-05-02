@@ -77,7 +77,7 @@ class Cluster_Class:
         for k in xrange(self.K):
             ix = np.where(predictions == k)           
             y_k = y[ix]
-            prop = float(sum(y_k))/len(y_k)
+            prop = round(float(sum(y_k))/len(y_k), 5)
             self.proportions[k] = (prop, 1-prop) 
 
         return self.proportions
@@ -97,7 +97,7 @@ class Cluster_Class:
         for k in xrange(self.K):
             if len(self.clusters[k][1]) > 0:
                 predictions = self.clf[k].predict(X)
-                prop = float(sum(predictions))/len(predictions)
+                prop = round(float(sum(predictions))/len(predictions), 5)
                 self.proportions[k] = (prop, 1-prop)
 
         return self.proportions
