@@ -30,6 +30,8 @@ class Cluster_Class:
         self.clusters = {}
         self.clf = {}
         self.proportions = {}
+        self.pred_counts = {'R': 0, 'C': 0}
+        self.raw_counts = {'R': 0, 'C': 0}
 
     
     def fit(self, X, y, clf = None):
@@ -78,7 +80,10 @@ class Cluster_Class:
             ix = np.where(predictions == k)           
             y_k = y[ix]
             prop = round(float(sum(y_k))/len(y_k), 5)
-            self.proportions[k] = (prop, 1-prop) 
+            self.proportions[k] = (prop, round(1-prop, 5))
+
+        self.raw_counts['R'] = sum(y)
+        self.raw_counts['C'] = len(y) - sum(y)
 
         return self.proportions
 
@@ -93,11 +98,17 @@ class Cluster_Class:
         Returns:
             A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
         '''        
+        cluster_labels = self.kmeans.predict(X)
 
         for k in xrange(self.K):
-            if len(self.clusters[k][1]) > 0:
-                predictions = self.clf[k].predict(X)
-                prop = round(float(sum(predictions))/len(predictions), 5)
-                self.proportions[k] = (prop, 1-prop)
+            ix = np.where(cluster_labels == k)
+            X_k = X[ix]
+            predictions = self.clf[k].predict(X_k)
+
+            self.pred_counts['R'] += sum(predictions)
+            self.pred_counts['C'] += len(predictions) - sum(predictions)
+            
+            prop = round(float(sum(predictions))/len(predictions), 5)
+            self.proportions[k] = (prop, round(1-prop, 5))
 
         return self.proportions
