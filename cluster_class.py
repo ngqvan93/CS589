@@ -31,75 +31,38 @@ class Cluster_Class:
         self.clf = {}
         self.proportions = {}
 
-
-    def classify_one_cluster(self, k, clf, *args):
-        '''
-        This function fits a classifier of a specified cluster.
-
-        Args:
-            k: Cluster to classify.
-            clf: A classifier (DecisionTree or SVM).
-            args: Arguments of the classifier.
-        '''
-
-        X = self.clusters[k][0]
-        y = self.clusters[k][1]
-        if clf == DecisionTreeClassifier:
-            clf = clf(max_depth = args[0])
-        else:
-            clf = clf(C = args[0], kernel = args[1])
-        clf.fit(X, y)
-        self.clf[k] = clf
-
-
-    def fit_baseline(self, X, y):
+    
+    def fit(self, X, y, clf = None):
         '''
         This function fits clustering model and stores data in each cluster.
 
         Args:
             X: A data matrix of dimension (N, D).
             y: A vector label (N, 1).
+            clf: A binary, True: Fit clustering/classification model, False: fit baseline model.
         '''
 
         # Fit a K-Means clustering model.
         self.kmeans = self.kmeans.fit(X)        
         Z = self.kmeans.labels_
         
-        # Iterate through each cluster.         
-        for k in range(self.K):
-            # Find index of cluster k.
-            ix = np.where(Z==k)
+        if clf:
+            # Iterate through each cluster.         
+            for k in range(self.K):
+                # Find index of cluster k.
+                ix = np.where(Z==k)
 
-            # Check if there is any case assigned to cluster kth.
-            if len(ix[0]) > 0:
-                y_k = y[ix]
-                X_k = X[ix]
-                self.clusters[k] = (X_k, y_k)   
-            else:
-                label = random.choice(y)
-                if label == 1:
-                    self.proportions[k] = (1, 0)
+                # Check if there is any case assigned to cluster kth.
+                if len(ix[0]) > 0:
+                    y_k = y[ix]
+                    X_k = X[ix]
+                    self.clusters[k] = (X_k, y_k)   
                 else:
-                    self.proportions[k] = (0, 1)
+                    r_ix = random.choice(ix)
+                    self.clusters[k] = (X[r_ix], y[r_ix])
 
 
-    def fit(self, X, y, clf, args):
-        '''
-        This function fits data based on the pipeline.
-
-        Args:
-            X: A data matrix of dimension (N, D).
-            y: A vector label (N, 1).
-            clf: A classifier (DecisionTree or SVM).
-            args: Arguments of the classifier.
-        '''
-        
-        self.fit_baseline(X, y)
-        for k in range(self.K):
-            self.classify_one_cluster(k, clf, args[k])
-
-
-    def predict_baseline(self, X):
+    def predict_baseline(self, X, y):
         '''
         This function make predictions from the baseline model.
 
@@ -110,11 +73,12 @@ class Cluster_Class:
             A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
         '''
 
-        self.kmeans.predict(X)
+        predictions = self.kmeans.predict(X)
         for k in xrange(self.K):
-            if len(self.clusters[k][1]) > 0:
-                prop = float(sum(self.clusters[k][1]))/len(self.clusters[k][1])
-                self.proportions[k] = (prop, 1-prop) 
+            ix = np.where(predictions == k)           
+            y_k = y[ix]
+            prop = float(sum(y_k))/len(y_k)
+            self.proportions[k] = (prop, 1-prop) 
 
         return self.proportions
 

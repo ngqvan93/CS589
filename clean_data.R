@@ -91,6 +91,17 @@ test <- multiple %>%
   filter(row_number() > n) %>%
   select(-n, -random)
 
+set.seed(0)
+
+idx <- sample(1:nrow(train), size = floor(0.13*nrow(train)), replace = F)
+small_train <- train[idx, ]
+
+idx <- sample(1:nrow(train), size = floor(0.13*nrow(test)), replace = F)
+small_test <- test[idx, ]
+
+write.csv(train, 'small_train.csv', row.names = F)
+write.csv(test, 'small_test.csv', row.names = F)
+
 
 write.csv(train, 'train.csv', row.names = F)
 write.csv(test, 'test.csv', row.names = F)

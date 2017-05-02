@@ -34,11 +34,11 @@ DATA_PATH = '/Users/VanNguyen/Desktop/COMPSCI589/Final Project/Data/'
 
 
 # Load data
-TRAIN = pd.read_csv(DATA_PATH + 'train.csv')
-TEST = pd.read_csv(DATA_PATH + 'test.csv')
+TRAIN = pd.read_csv(DATA_PATH + 'small_train.csv')
+TEST = pd.read_csv(DATA_PATH + 'small_test.csv')
 
    
-# Data Processing --------------------
+# Data processing --------------------
 
 def make_dummy(data):
     '''
@@ -73,7 +73,7 @@ def make_dummy(data):
     return X, y
 
 
-# K-Means Cross Validation --------------------
+# K-Means cross validation --------------------
 
 def KMeans_CV(X, K_vals):   
     '''
@@ -101,7 +101,7 @@ def KMeans_CV(X, K_vals):
     return km.best_estimator_
 
 
-# Decision Tree Cross Validation --------------------
+# Decision Tree cross validation --------------------
 
 def dt_CV(k, depth_vals, X_train, y_train, create_plot = None):
     '''
@@ -219,15 +219,28 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     return svc.best_estimator_
 
 
+# Calculate true proportions of test labels  --------------------
+def get_true_prop(y):
+    '''
+    This function calculates the true proportions of riders.
+
+    Args:
+        y: A vector of labels (N, 1).
+
+    Returns:
+        A tuple that specifies the proportions of registered riders and casual riders. 
+    '''
+
+    prop = float(sum(y))/len(y)
+    return (prop, 1-prop)
+
+
 # main() --------------------
 def main():
 
     # Part 1: Make data.
     X_train, y_train = make_dummy(TRAIN) # Full data
     X_test, y_test = make_dummy(TEST) # Full data
-
-    # X_train, y_train = make_dummy(small_train) # You can define some small train and small test here
-    # X_test, y_test = make_dummy(small_test)
 
     
     # Part 2: K-Means CV.   
@@ -239,44 +252,44 @@ def main():
 
     # Part 3: Fit pipeline.
     
-    best_K = 10                    # CHANGE THIS based on what you have from Part 1. 
+    # best_K = 10                    # CHANGE THIS based on what you have from Part 1. 
 
-    # Part 3.1: Fit baseline model.
-    # Initialize a Cluster_Class object.
-    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    # Fit and predict baseline model.
-    clf.fit_baseline(X_train, y_train)
-    baseline_predictions = clf.predict_baseline(X_test, y_test)
-    print baseline_predictions
+    # # Part 3.1: Fit baseline model.
+    # # Initialize a Cluster_Class object.
+    # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # # Fit and predict baseline model.
+    # clf.fit(X_train, y_train)
+    # baseline_predictions = clf.predict_baseline(X_test, y_test)
+    # print baseline_predictions
 
     # Part 3.2: Fit cluster-classification model. Tune each classifier.
     
-    # Part 3.2.1: Tune DecisionTreeClassifier.
-    depth_vals = range(1, 10)          # CHANGE THIS
+    # # Part 3.2.1: Tune DecisionTreeClassifier.
+    # depth_vals = range(1, 10)          # CHANGE THIS
     
-    # Initialize a Cluster_Class object.
-    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    # Fit a baseline model aka initial clustering. 
-    clf.fit_baseline(X_train, y_train)
+    # # Initialize a Cluster_Class object.
+    # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # # Fit a baseline model aka initial clustering. 
+    # clf.fit(X = X_train, y = y_train, clf = True)
     
-    # In each cluster, run CV to find optimal DecisionTree. 
-    for i in xrange(clf.K):
-        best_dt = dt_CV(k = 3, #number of folds
-            depth_vals = depth_vals, 
-            X_train = clf.clusters[i][0],
-            y_train = clf.clusters[i][1], 
-            create_plot = None)
-        clf.clf[i] = best_dt
+    # # In each cluster, run CV to find optimal DecisionTree. 
+    # for i in xrange(clf.K):
+    #     best_dt = dt_CV(k = 3, #number of folds
+    #         depth_vals = depth_vals, 
+    #         X_train = clf.clusters[i][0],
+    #         y_train = clf.clusters[i][1], 
+    #         create_plot = None)
+    #     clf.clf[i] = best_dt
 
-    predictions = clf.predict(X_test)
-    print predictions
+    # predictions = clf.predict(X_test)
+    # print predictions
 
     # # Part 3.2.2: Tune SVM classifier.
     # C_vals = [0.0001, 0.001, 0.1, 1, 10, 20, 30, 50, 100, 500, 1000]          # CHANGE THIS
     # kernel_vals = ['rbf', 'linear']
     
     # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    # clf.fit_baseline(X_train, y_train)
+    # clf.fit(X = X_train, y = y_train, clf = True)
     
     # best_C = []
     # best_kernels = []
