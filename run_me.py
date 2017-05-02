@@ -236,60 +236,65 @@ def main():
 
     # Part 3: Fit pipeline.
     
-    # best_K = 10                    # CHANGE THIS based on what you have from Part 1. 
+    best_K = 10                    # CHANGE THIS based on what you have from Part 2. 
 
-    # # Part 3.1: Fit baseline model.
-    # # Initialize a Cluster_Class object.
-    # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    # # Fit and predict baseline model.
-    # clf.fit(X_train, y_train)
-    # baseline_predictions = clf.predict_baseline(X_test, y_test)
-    # print "True baseline proportions"
-    # print baseline_predictions
+    # Part 3.1: Fit baseline model.
+    # Initialize a Cluster_Class object.
+    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # Fit and predict baseline model.
+    clf.fit(X_train, y_train)
+    baseline_predictions = clf.predict_baseline(X_test, y_test)
+    print "True baseline proportions in each cluster:"
+    print baseline_predictions
+    print "Raw counts of labels in all clusters:"
+    print clf.raw_counts
 
     # Part 3.2: Fit cluster-classification model. Tune each classifier.
     
-    # # Part 3.2.1: Tune DecisionTreeClassifier.
-    # depth_vals = range(1, 10)          # CHANGE THIS
+    # Part 3.2.1: Tune DecisionTreeClassifier.
+    depth_vals = range(1, 10)          # CHANGE THIS
     
-    # # Initialize a Cluster_Class object.
-    # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    # # Fit a baseline model aka initial clustering. 
-    # clf.fit(X = X_train, y = y_train, clf = True)
+    # Initialize a Cluster_Class object.
+    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # Fit a baseline model aka initial clustering. 
+    clf.fit(X = X_train, y = y_train, clf = True)
     
-    # # In each cluster, run CV to find optimal DecisionTree. 
-    # for i in xrange(clf.K):
-    #     best_dt = dt_CV(k = 3, #number of folds
-    #         depth_vals = depth_vals, 
-    #         X_train = clf.clusters[i][0],
-    #         y_train = clf.clusters[i][1], 
-    #         create_plot = None)
-    #     clf.clf[i] = best_dt
+    # In each cluster, run CV to find optimal DecisionTree. 
+    for i in xrange(clf.K):
+        best_dt = dt_CV(k = 3, #number of folds
+            depth_vals = depth_vals, 
+            X_train = clf.clusters[i][0],
+            y_train = clf.clusters[i][1], 
+            create_plot = None)
+        clf.clf[i] = best_dt
 
-    # predictions = clf.predict(X_test)
-    # print "Decision Tree predictions"
-    # print predictions
+    predictions = clf.predict(X_test)
+    print "Decision Tree predictions in each cluster:"
+    print predictions
+    print "Predicted counts of labels in all clusters:"
+    print clf.pred_counts
 
-    # # Part 3.2.2: Tune SVM classifier.
-    # C_vals = [0.0001, 0.001, 0.1, 1, 10, 20, 30, 50, 100, 500, 1000]          # CHANGE THIS
-    # kernel_vals = ['rbf', 'linear']
+    # Part 3.2.2: Tune SVM classifier.
+    C_vals = [0.0001, 0.001, 0.1, 1, 10, 20, 30, 50, 100, 500, 1000]          # CHANGE THIS
+    kernel_vals = ['rbf', 'linear']
     
-    # clf = cluster_class.Cluster_Class(K = best_K, r = 0)
-    # clf.fit(X = X_train, y = y_train, clf = True)
-    
-    # best_C = []
-    # best_kernels = []
-    # for i in xrange(clf.K):
-    #     best_svm = svm_CV(k = 3, # number of folds
-    #         C_vals = C_vals, 
-    #         kernel_vals = kernel_vals, 
-    #         X_train = clf.clusters[i][0], 
-    #         y_train = clf.clusters[i][1])
-    #     clf.clf[i] = best_svm
+    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    clf.fit(X = X_train, y = y_train, clf = True)
 
-    # predictions = clf.predict(X_test)
-    # print "SVM predictions"
-    # print predictions
+    # In each cluster, run CV to find optimal SVM. 
+    for i in xrange(clf.K):
+        best_svm = svm_CV(k = 3, # number of folds
+            C_vals = C_vals, 
+            kernel_vals = kernel_vals, 
+            X_train = clf.clusters[i][0], 
+            y_train = clf.clusters[i][1])
+        clf.clf[i] = best_svm
+
+    predictions = clf.predict(X_test)
+    print "SVM predictions in each cluster:"
+    print predictions
+    print "Predicted counts of labels in all clusters:"
+    print clf.pred_counts
 
 
 if __name__ == '__main__':

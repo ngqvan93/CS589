@@ -61,15 +61,10 @@ temp <- full.df %>%
 ix <- which(temp$count == 1)
 single.station <- temp$station[ix]
 
-single <- full.df %>%
-  filter(station %in% single.station)
-
 multiple <- full.df %>% 
   filter(!(station %in% single.station))
 
-
 scalar <- (0.7*nrow(full.df) - nrow(single))/(nrow(full.df) - nrow(single))
-
 
 set.seed(0)
 multiple$random <- runif(nrow(multiple), 0, 1)
@@ -84,24 +79,28 @@ train <- multiple %>%
   filter(row_number() <= n) %>%
   select(-n, -random)
 
-train <- bind_rows(single, train)
-
 test <- multiple %>%
   group_by(station) %>%
   filter(row_number() > n) %>%
   select(-n, -random)
 
-set.seed(0)
-
-idx <- sample(1:nrow(train), size = floor(0.13*nrow(train)), replace = F)
-small_train <- train[idx, ]
-
-idx <- sample(1:nrow(train), size = floor(0.13*nrow(test)), replace = F)
-small_test <- test[idx, ]
-
-write.csv(train, 'small_train.csv', row.names = F)
-write.csv(test, 'small_test.csv', row.names = F)
-
-
 write.csv(train, 'train.csv', row.names = F)
 write.csv(test, 'test.csv', row.names = F)
+
+
+# Make small train and test sets ---------------------------------
+set.seed(0)
+idx <- sample(1:nrow(train), size = 200000, replace = F)
+small_train <- train[idx, ]
+
+small_train <- small_train %>%
+  filter(station %in% small_test$station)
+
+idx <- sample(1:nrow(train), size = 200000, replace = F)
+small_test <- test[idx, ]
+
+small_test <- small_test %>%
+  filter(station %in% small_train$station)
+
+write.csv(small_train, 'small_train.csv', row.names = F)
+write.csv(small_test, 'small_test.csv', row.names = F)
