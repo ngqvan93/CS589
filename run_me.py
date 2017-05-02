@@ -219,22 +219,6 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     return svc.best_estimator_
 
 
-# Calculate true proportions of test labels  --------------------
-def get_true_prop(y):
-    '''
-    This function calculates the true proportions of riders.
-
-    Args:
-        y: A vector of labels (N, 1).
-
-    Returns:
-        A tuple that specifies the proportions of registered riders and casual riders. 
-    '''
-
-    prop = float(sum(y))/len(y)
-    return (prop, 1-prop)
-
-
 # main() --------------------
 def main():
 
@@ -260,6 +244,7 @@ def main():
     # # Fit and predict baseline model.
     # clf.fit(X_train, y_train)
     # baseline_predictions = clf.predict_baseline(X_test, y_test)
+    # print "True baseline proportions"
     # print baseline_predictions
 
     # Part 3.2: Fit cluster-classification model. Tune each classifier.
@@ -282,6 +267,7 @@ def main():
     #     clf.clf[i] = best_dt
 
     # predictions = clf.predict(X_test)
+    # print "Decision Tree predictions"
     # print predictions
 
     # # Part 3.2.2: Tune SVM classifier.
@@ -302,6 +288,7 @@ def main():
     #     clf.clf[i] = best_svm
 
     # predictions = clf.predict(X_test)
+    # print "SVM predictions"
     # print predictions
 
 
