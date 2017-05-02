@@ -299,7 +299,7 @@ def main():
     #         kernel_vals = kernel_vals, 
     #         X_train = clf.clusters[i][0], 
     #         y_train = clf.clusters[i][1])
-    #     clf.clf[i] = svm
+    #     clf.clf[i] = best_svm
 
     # predictions = clf.predict(X_test)
     # print predictions
