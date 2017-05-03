@@ -71,6 +71,15 @@ def make_dummy(data):
     return X, y
 
 def get_stations(ix_list):
+    '''
+    This function calculate the number of unique stations assigned to each cluster.
+
+    Args:
+        ix_list: A 2D list. Each element is a list of indices of data observations that belong to a cluster.
+
+    Returns:
+        A list specifying the number of unique stations at each cluster.
+    '''
     stations = {}
     for i in xrange(len(ix_list)):
         temp = len(set(TRAIN.loc[ix_list[i], 'station']))

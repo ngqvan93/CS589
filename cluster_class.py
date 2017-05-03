@@ -73,7 +73,8 @@ class Cluster_Class:
             X: A data matrix of dimension (N, D).
 
         Returns:
-            A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
+            ix_list: A 2D list. Each element is a list of indices of data observations that belong to a cluster.
+            proportions: A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
         '''
 
         predictions = self.kmeans.predict(X)
@@ -102,7 +103,8 @@ class Cluster_Class:
             X: A data matrix of dimension (N, D).
 
         Returns:
-            A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
+            true_pos: The number of true positives, aka number of data points that are correctly labeled as "Registered".
+            proportions: A dictionary where key is the ID of cluster and value is a tuple of proportions of riders. 
         '''        
         cluster_labels = self.kmeans.predict(X)
 
@@ -126,4 +128,3 @@ class Cluster_Class:
         return self.true_pos, self.proportions
 
 
-        
