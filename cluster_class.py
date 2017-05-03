@@ -32,6 +32,7 @@ class Cluster_Class:
         self.proportions = {}
         self.pred_counts = {'R': 0, 'C': 0}
         self.raw_counts = {'R': 0, 'C': 0}
+        self.true_pos = 0
 
     
     def fit(self, X, y, clf = None):
@@ -76,19 +77,24 @@ class Cluster_Class:
         '''
 
         predictions = self.kmeans.predict(X)
+        ix_list = []
         for k in xrange(self.K):
-            ix = np.where(predictions == k)           
-            y_k = y[ix]
-            prop = round(float(sum(y_k))/len(y_k), 5)
-            self.proportions[k] = (prop, round(1-prop, 5))
+            ix = np.where(predictions == k)
+            ix_list.append(list(ix[0]))
+            if len(ix[0]) > 0:          
+                y_k = y[ix]
+                prop = round(float(sum(y_k))/len(y_k), 5)
+                self.proportions[k] = (prop, round(1-prop, 5))
+            else:
+                self.proportions[k] = (0, 0) 
 
         self.raw_counts['R'] = sum(y)
         self.raw_counts['C'] = len(y) - sum(y)
 
-        return self.proportions
+        return ix_list, self.proportions
 
 
-    def predict(self, X):
+    def predict(self, X, y):
         '''
         This function makes predictions using a cluster classifier object.
 
@@ -102,13 +108,22 @@ class Cluster_Class:
 
         for k in xrange(self.K):
             ix = np.where(cluster_labels == k)
-            X_k = X[ix]
-            predictions = self.clf[k].predict(X_k)
+            if len(ix[0]) > 0:
+                X_k = X[ix]
+                y_k = np.array(y[ix])
+                predictions = np.array(self.clf[k].predict(X_k))
+                pos_ix = np.where(predictions == 1)
+                pos = predictions[pos_ix]
+                y_k = y_k[pos_ix]
+                errors = pos - y_k
+                self.true_pos += len(np.where(errors == 0)[0])
+                self.pred_counts['R'] += sum(predictions)
+                self.pred_counts['C'] += len(predictions) - sum(predictions)
+                
+                prop = round(float(sum(predictions))/len(predictions), 5)
+                self.proportions[k] = (prop, round(1-prop, 5))
 
-            self.pred_counts['R'] += sum(predictions)
-            self.pred_counts['C'] += len(predictions) - sum(predictions)
-            
-            prop = round(float(sum(predictions))/len(predictions), 5)
-            self.proportions[k] = (prop, round(1-prop, 5))
+        return self.true_pos, self.proportions
 
-        return self.proportions
+
+        

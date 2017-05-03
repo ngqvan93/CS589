@@ -15,8 +15,7 @@ import matplotlib.pyplot as plt
 # Sklearn machine learning model
 from sklearn.cluster import KMeans
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.svm import LinearSVC
 
 # Model selection, evaluation metrics
 from sklearn.model_selection import GridSearchCV
@@ -26,7 +25,7 @@ from sklearn.metrics.pairwise import pairwise_distances
 
 # Others
 import cluster_class 
-
+import random
 
 # Load data ---------------------
 # Define data path, column names
@@ -34,8 +33,8 @@ DATA_PATH = '/Users/VanNguyen/Desktop/COMPSCI589/Final Project/Data/'
 
 
 # Load data
-TRAIN = pd.read_csv(DATA_PATH + 'small_train.csv')
-TEST = pd.read_csv(DATA_PATH + 'small_test.csv')
+TRAIN = pd.read_csv(DATA_PATH + 'train.csv')
+TEST = pd.read_csv(DATA_PATH + 'test.csv')
 
    
 # Data processing --------------------
@@ -52,7 +51,6 @@ def make_dummy(data):
         X: A data matrix X (N, D).
         y: A vector label (N, 1).
     '''
-
     # Create indicator variables for categorical features. 
     season_dummy = np.array(pd.get_dummies(data.loc[:, 'season']))
     holiday_dummy = np.array(pd.get_dummies(data.loc[:, 'holiday']))
@@ -62,8 +60,8 @@ def make_dummy(data):
     type_dummy = np.array(pd.get_dummies(data.loc[:, 'type']).iloc[:, 1])
 
     # Delete categorical columns.
-    data.drop(['season', 'holiday', 'workingday', 
-        'weathersit', 'station', 'type'], axis = 1, inplace = True)
+    data = data.drop(['season', 'holiday', 'workingday', 
+        'weathersit', 'station', 'type'], axis = 1)
 
     # Column bind the dummy matrix to the data matrix.
     data = np.column_stack((np.array(data), season_dummy, station_dummy, type_dummy))
@@ -72,8 +70,15 @@ def make_dummy(data):
     
     return X, y
 
+def get_stations(ix_list):
+    stations = {}
+    for i in xrange(len(ix_list)):
+        temp = len(set(TRAIN.loc[ix_list[i], 'station']))
+        stations[i] = temp
+    return stations
 
-# K-Means cross validation --------------------
+
+# K-Means Cross-Validation --------------------
 
 def KMeans_CV(X, K_vals):   
     '''
@@ -98,10 +103,10 @@ def KMeans_CV(X, K_vals):
     km = GridSearchCV(km, params)
     km.fit(X)
 
-    return km.best_estimator_
+    return km
 
 
-# Decision Tree cross validation --------------------
+# Decision Tree Cross-Validation --------------------
 
 def dt_CV(k, depth_vals, X_train, y_train, create_plot = None):
     '''
@@ -122,7 +127,7 @@ def dt_CV(k, depth_vals, X_train, y_train, create_plot = None):
     # We use negative mean squared error to account for scoring mechanism in sklearn.
     # cv = k sets the number of folds in k-fold cross validation. 
 
-    dt = DecisionTreeClassifier(random_state = 0)
+    dt = DecisionTreeClassifier(random_state = 0, min_samples_split = 3)
     train_scores, valid_scores = validation_curve(dt, X_train, y_train, 
                                                   param_name = "max_depth", 
                                                   param_range = depth_vals, 
@@ -169,8 +174,8 @@ def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
     plt.title("Train-Validation Curve with KFold-CV on Decision Tree Classifier")
     plt.xlabel("Maximum Tree Depth") 
     plt.ylabel("RMSE")
-    plt.ylim(0.0, np.amax(valid_rmse)+2)
-    plt.xlim(0.0, np.amax(depth_vals)+10)
+    plt.ylim(0.3, 0.6)
+    plt.xlim(0.0, np.amax(depth_vals)+1)
     lw = 2
     plt.plot(depth_vals, train_rmse_mean, label="Training RMSE",
              color="darkorange", lw=lw)
@@ -189,7 +194,7 @@ def plot_validation_curve(train_rmse, valid_rmse, depth_vals):
 
 # SVM Cross Validation --------------------
 
-def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
+def svm_CV(k, C_vals, X_train, y_train):
     '''
     This functions runs cross validation for an SVM classifier.
 
@@ -205,10 +210,10 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     '''
 
     # Declare the range of hyperparamters to search over
-    params = {'C': C_vals, 'kernel': kernel_vals}
+    params = {'C': C_vals}
     
     # Initialize an SVC classifier
-    svc = SVC()
+    svc = LinearSVC()
 
     # Fit SVC model and search for the best hyperparameter based on
     # SVC default scoring method.
@@ -217,6 +222,9 @@ def svm_CV(k, C_vals, kernel_vals, X_train, y_train):
     svc.fit(X_train, y_train)
     
     return svc.best_estimator_
+
+
+
 
 
 # main() --------------------
@@ -228,71 +236,83 @@ def main():
 
     
     # Part 2: K-Means CV.   
-    K_vals = range(1, 40)   # You can change the range of K. But let's see what 1 to 40 gives us. 
+    K_vals = range(1, 21) 
     best_km = KMeans_CV(X = X_train, K_vals = K_vals)
-    # Note down best K here.
-    print best_km
+    print best_km.best_estimator_
+    print best_km.cv_results_['mean_train_score']
 
 
     # Part 3: Fit pipeline.
     
-    best_K = 10                    # CHANGE THIS based on what you have from Part 2. 
+    best_K = 4  # We hard code this using result from the Elbow method.
 
     # Part 3.1: Fit baseline model.
     # Initialize a Cluster_Class object.
-    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    clf = cluster_class.Cluster_Class(K = best_K, r = 10)
     # Fit and predict baseline model.
     clf.fit(X_train, y_train)
-    baseline_predictions = clf.predict_baseline(X_test, y_test)
+    ix_list, baseline_predictions = clf.predict_baseline(X_test, y_test)
+    # Print results
     print "True baseline proportions in each cluster:"
     print baseline_predictions
     print "Raw counts of labels in all clusters:"
     print clf.raw_counts
+    print "Distributions of stations in each cluster:"
+    print get_stations(ix_list)
+
 
     # Part 3.2: Fit cluster-classification model. Tune each classifier.
-    
     # Part 3.2.1: Tune DecisionTreeClassifier.
-    depth_vals = range(1, 10)          # CHANGE THIS
+    depth_vals = range(1, 11)
     
     # Initialize a Cluster_Class object.
-    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    clf = cluster_class.Cluster_Class(K = best_K, r = 10)
     # Fit a baseline model aka initial clustering. 
     clf.fit(X = X_train, y = y_train, clf = True)
     
     # In each cluster, run CV to find optimal DecisionTree. 
     for i in xrange(clf.K):
-        best_dt = dt_CV(k = 3, #number of folds
+        if len(clf.clusters[i][0]) > 1:
+            best_dt = dt_CV(k = 3, #number of folds
             depth_vals = depth_vals, 
             X_train = clf.clusters[i][0],
             y_train = clf.clusters[i][1], 
-            create_plot = None)
-        clf.clf[i] = best_dt
+            create_plot = True)
+            clf.clf[i] = best_dt
 
-    predictions = clf.predict(X_test)
+    true_pos, predictions = clf.predict(X_test, y_test)
+    
     print "Decision Tree predictions in each cluster:"
     print predictions
+    print "Number of true positives"
+    print true_pos
     print "Predicted counts of labels in all clusters:"
     print clf.pred_counts
 
-    # Part 3.2.2: Tune SVM classifier.
-    C_vals = [0.0001, 0.001, 0.1, 1, 10, 20, 30, 50, 100, 500, 1000]          # CHANGE THIS
-    kernel_vals = ['rbf', 'linear']
+
+    # # Part 3.2.2: Tune SVM classifier.
+    C_vals = [0.0001, 0.001, 0.1, 1, 10, 100]  
+    # kernel_vals = ['rbf', 'linear']
     
-    clf = cluster_class.Cluster_Class(K = best_K, r = 0)
+    # Initialize a Cluster_Class object.
+    clf = cluster_class.Cluster_Class(K = best_K, r = 10)
+    # Fit a baseline model aka initial clustering. 
     clf.fit(X = X_train, y = y_train, clf = True)
 
     # In each cluster, run CV to find optimal SVM. 
     for i in xrange(clf.K):
-        best_svm = svm_CV(k = 3, # number of folds
-            C_vals = C_vals, 
-            kernel_vals = kernel_vals, 
-            X_train = clf.clusters[i][0], 
-            y_train = clf.clusters[i][1])
-        clf.clf[i] = best_svm
+        if len(clf.clusters[i][0]) > 1:
+            best_svm = svm_CV(k = 3, # number of folds
+                C_vals = C_vals, 
+                X_train = clf.clusters[i][0], 
+                y_train = clf.clusters[i][1])
+            clf.clf[i] = best_svm
 
-    predictions = clf.predict(X_test)
+    true_pos, predictions = clf.predict(X_test, y_test)
     print "SVM predictions in each cluster:"
     print predictions
+    print "Number of true positives"
+    print true_pos
     print "Predicted counts of labels in all clusters:"
     print clf.pred_counts
 
